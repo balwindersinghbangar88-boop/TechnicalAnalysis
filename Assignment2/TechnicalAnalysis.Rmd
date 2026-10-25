@@ -1,0 +1,82 @@
+---
+title: "BDA400 Assignment 2 - Technical Analysis using R (Preliminary Stage)"
+author: "Balwinder Singh Bangar"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
+                      fig.width = 8, fig.height = 4)
+options(ta.no_main = TRUE)   # load the functions without auto-running them
+```
+
+## 1. Load functions
+
+`stock_functions.R` holds the import and statistics functions;
+`display_stocks.R` holds the display and visualization functions.
+
+```{r functions}
+source("display_stocks.R")   # also sources stock_functions.R
+```
+
+## 2. Portfolio
+
+```{r portfolio}
+read_portfolio("portfolio.txt")
+```
+
+## 3. Import stock data
+
+```{r import}
+stocks <- load_stock_data("portfolio.txt")
+names(stocks)
+```
+
+## 4. Imported data frames
+
+```{r display}
+display_stock_data(stocks)
+```
+
+### Quote summary
+
+```{r quote}
+knitr::kable(display_quote_summary(stocks))
+```
+
+## 5. Calculated statistics
+
+```{r stats}
+stats <- calculate_all_statistics(stocks)
+display_statistics(stats)
+```
+
+### Comparison
+
+```{r compare}
+knitr::kable(statistics_comparison(stats), digits = 2)
+```
+
+## 6. Visualizations
+
+```{r plots, results='asis'}
+for (sym in names(stocks)) {
+  cat("\n\n### ", sym, "\n\n")
+  print(plot_price_ma(stats, sym))
+  print(plot_close_hist(stocks, stats, sym))
+}
+```
+
+### Portfolio comparison
+
+```{r normalised}
+plot_normalised(stocks)
+plot_sd_comparison(stats)
+```
+
+### Candlestick chart (first stock, last 90 days)
+
+```{r candles}
+plot_candles(stocks, names(stocks)[1], days = 90)
+```
